@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "karoshirt-type"
+version = "0.1.0"
+description = "Voronoi typography from the karoshirt font: text → 2D paths or B&W stencil image."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy",
+    "pillow",
+    "matplotlib",
+    "scipy",
+    "shapely",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+karoshirt_type = ["data/font/*.xml"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
