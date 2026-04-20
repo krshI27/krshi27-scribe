@@ -1,10 +1,10 @@
 import streamlit as st
 
-from karoshirt_type import render
-from krshi_style import apply_theme
+from krshi27_scribe import render
+from krshi27_theme import apply_theme
 
-apply_theme(st, page_title="karoshirt-type")
-st.title("karoshirt-type")
+apply_theme(st, page_title="krshi27-scribe")
+st.title("krshi27-scribe")
 st.caption("text → Voronoi stencil")
 
 text = st.text_input("text", "KRSHI27")

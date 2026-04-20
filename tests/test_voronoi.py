@@ -1,6 +1,6 @@
 import numpy as np
 
-from karoshirt_type import render, voronoi_paths
+from krshi27_scribe import render, voronoi_paths
 
 
 def test_voronoi_paths_returns_arrays():

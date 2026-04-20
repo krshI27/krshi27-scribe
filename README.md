@@ -1,4 +1,4 @@
-# karoshirt-type
+# krshi27-scribe
 
 Karoshirt-font Voronoi typography. Text string → list of 2D paths, or directly
 to a B&W stencil image.
