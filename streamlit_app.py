@@ -1,8 +1,9 @@
 import streamlit as st
 
 from karoshirt_type import render
+from krshi_style import apply_theme
 
-st.set_page_config(page_title="karoshirt-type", layout="wide")
+apply_theme(st, page_title="karoshirt-type")
 st.title("karoshirt-type")
 st.caption("text → Voronoi stencil")
 
