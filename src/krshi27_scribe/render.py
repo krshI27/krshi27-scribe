@@ -20,6 +20,7 @@ def render(
     size: int = 512,
     line_color: str = "#000000",
     line_width: float = 2.0,
+    opacity: float = 1.0,
     n_shift: int = 10,
     shift_range: float = 0.0125,
     hull_buffer: float = 0.1,
@@ -52,4 +53,9 @@ def render(
     fig.savefig(buf, format="png", dpi=dpi, transparent=transparent, bbox_inches=None, pad_inches=0)
     plt.close(fig)
     buf.seek(0)
-    return Image.open(buf).convert("RGBA").resize((size, size), Image.LANCZOS)
+    img = Image.open(buf).convert("RGBA").resize((size, size), Image.LANCZOS)
+    if opacity < 1.0:
+        arr = np.array(img)
+        arr[:, :, 3] = (arr[:, :, 3] * opacity).astype(np.uint8)
+        img = Image.fromarray(arr)
+    return img

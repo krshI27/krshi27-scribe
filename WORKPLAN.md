@@ -30,6 +30,7 @@
 
 - [ ] **SCRIBE-1** ~1hr: Deploy to Streamlit Cloud — create `environment.yml` first, connect `github.com/krshI27/krshi27-scribe`, test render end-to-end
 - [x] **ZV1-SCRIBE** ~1hr: Add `?preset=` URL loader (see pattern below) — 6 params map directly to `st.session_state`; test round-trip with a saved preset URL
+- [x] **SCRIBE-BG** ~2hr: Subway window background — `background.py` masks window glass via rounded-rect (calibrated px bounds 300–1905 × 205–1305 on 2200×1500), composites RGBA stencil with feathered edges; `line_color` color picker added to app; default white stroke when background active; 8 tests pass
 
 ## Next sprint
 
