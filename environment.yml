@@ -1,0 +1,13 @@
+name: krshi27-scribe
+channels:
+  - conda-forge
+dependencies:
+  - python=3.14
+  - numpy
+  - pillow
+  - matplotlib
+  - scipy
+  - shapely
+  - streamlit
+  - pip:
+      - -e .

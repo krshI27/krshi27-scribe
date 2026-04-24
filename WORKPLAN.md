@@ -8,7 +8,8 @@
 
 ## Prerequisite (~20min, before anything else)
 
-- [ ] **SCRIBE-ENV**: Create `environment.yml` — required for Streamlit Cloud:
+- [x] **SCRIBE-ENV**: Create `environment.yml` — required for Streamlit Cloud:
+
   ```yaml
   name: krshi27-scribe
   channels:
@@ -20,6 +21,7 @@
     - matplotlib
     - scipy
     - shapely
+    - streamlit
     - pip:
         - -e .
   ```
@@ -27,11 +29,11 @@
 ## This sprint (Apr 24 – May 1)
 
 - [ ] **SCRIBE-1** ~1hr: Deploy to Streamlit Cloud — create `environment.yml` first, connect `github.com/krshI27/krshi27-scribe`, test render end-to-end
-- [ ] **ZV1-SCRIBE** ~1hr: Add `?preset=` URL loader (see pattern below) — 6 params map directly to `st.session_state`; test round-trip with a saved preset URL
+- [x] **ZV1-SCRIBE** ~1hr: Add `?preset=` URL loader (see pattern below) — 6 params map directly to `st.session_state`; test round-trip with a saved preset URL
 
 ## Next sprint
 
-- [ ] **SCRIBE-EXPORT** ~1hr: Add high-res download button — `render(text, size=3508)` at A4@300dpi (2480×3508px); `PIL.Image.save(buf, "JPEG", dpi=(300,300))`; `st.download_button`
+- [x] **SCRIBE-EXPORT** ~1hr: Add high-res download button — `render(text, size=3508)` at A4@300dpi (2480×3508px); `PIL.Image.save(buf, "JPEG", dpi=(300,300))`; `st.download_button`
 - [ ] **SCRIBE-PRODIGI** ~1hr: Add "Order Print" button → call high-res render → upload PNG to R2 public bucket → `POST https://api.prodigi.com/v4.0/orders` with `GLOBAL-FAP-11.7X8.3` SKU (A4 fine art print)
 - [ ] **SCRIBE-STICKER** ~30min: Evaluate sticker SKU (`GLOBAL-STK-*`) — B&W Voronoi type is ideal for sticker; check Prodigi sticker specs (white background needed?)
 - [ ] **ZV1-preset-scribe** ~30min: Create 2–3 Zine Vol.1 candidate presets — save as `presets/zine-vol1-*.json`
