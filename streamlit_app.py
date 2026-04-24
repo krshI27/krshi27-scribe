@@ -7,9 +7,10 @@ from PIL import Image
 
 from krshi27_scribe import render, BACKGROUNDS, load_background, window_render_size, composite_on_window
 
-st.set_page_config(page_title="krshi27-scribe")
+st.set_page_config(page_title="krshi27-scribe", layout="wide")
 
-BG_NONE = "None"
+BG_SOLID = "Solid Color"
+BG_WINDOW = "Subway Window"
 DEFAULT_PARAMS = {
     "text": "KRSHI27",
     "size": 512,
@@ -18,8 +19,9 @@ DEFAULT_PARAMS = {
     "line_width": 2.0,
     "seed": 0,
     "line_color": "#000000",
+    "bg_color": "#ffffff",
     "opacity": 1.0,
-    "background": BG_NONE,
+    "background": BG_SOLID,
 }
 
 
@@ -47,7 +49,7 @@ def _preset_url(params: dict[str, object]) -> str:
 
 
 @st.cache_data
-def _high_res_jpeg_bytes(text, line_color, opacity, line_width, n_shift, shift_range, seed):
+def _high_res_jpeg_bytes(text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed):
     source = render(
         text,
         size=3508,
@@ -57,9 +59,10 @@ def _high_res_jpeg_bytes(text, line_color, opacity, line_width, n_shift, shift_r
         n_shift=n_shift,
         shift_range=shift_range,
         seed=seed,
+        bg=bg_color,
     )
     a4_width, a4_height = 2480, 3508
-    canvas = Image.new("RGB", (a4_width, a4_height), "white")
+    canvas = Image.new("RGB", (a4_width, a4_height), bg_color)
     square = source.resize((2480, 2480), Image.LANCZOS)
     canvas.paste(square, (0, (a4_height - 2480) // 2), square.convert("RGBA"))
     buf = io.BytesIO()
@@ -69,57 +72,91 @@ def _high_res_jpeg_bytes(text, line_color, opacity, line_width, n_shift, shift_r
 
 _load_preset()
 
+# ── Sidebar ───────────────────────────────────────────────────────────────────
+with st.sidebar:
+    st.header("Parameters")
+
+    text = st.text_input("Text", DEFAULT_PARAMS["text"], key="text")
+
+    st.subheader("Background")
+    background = st.radio(
+        "Mode",
+        [BG_SOLID, BG_WINDOW],
+        horizontal=True,
+        key="background",
+        label_visibility="collapsed",
+    )
+    if background == BG_SOLID:
+        col_bg, col_stroke = st.columns(2)
+        with col_bg:
+            bg_color = st.color_picker("Background", DEFAULT_PARAMS["bg_color"], key="bg_color")
+        with col_stroke:
+            line_color = st.color_picker("Stroke", DEFAULT_PARAMS["line_color"], key="line_color")
+    else:
+        bg_color = DEFAULT_PARAMS["bg_color"]
+        line_color = st.color_picker("Stroke color", "#ffffff", key="line_color")
+
+    st.subheader("Shape")
+    n_shift = st.slider(
+        "Layers", 0, 256, DEFAULT_PARAMS["n_shift"], key="n_shift",
+        help="Number of Voronoi-shifted copies per character",
+    )
+    shift_range = st.slider(
+        "Scatter", 0.0, 0.05, DEFAULT_PARAMS["shift_range"],
+        step=0.001, format="%.3f", key="shift_range",
+        help="How far each copy drifts within its Voronoi cell",
+    )
+
+    st.subheader("Style")
+    line_width = st.slider(
+        "Stroke weight", 0.1, 6.0, DEFAULT_PARAMS["line_width"], step=0.1, key="line_width",
+    )
+    opacity = st.slider(
+        "Opacity", 0.0, 1.0, DEFAULT_PARAMS["opacity"], step=0.05, format="%.2f", key="opacity",
+    )
+
+    st.subheader("Output")
+    seed = st.number_input("Seed", 0, 9999, DEFAULT_PARAMS["seed"], key="seed")
+    if background == BG_SOLID:
+        size = st.slider("Resolution", 128, 1024, DEFAULT_PARAMS["size"], step=64, key="size")
+    else:
+        size = DEFAULT_PARAMS["size"]
+        st.caption("Resolution: auto (native window width)")
+
+    st.divider()
+    render_clicked = st.button("Render", type="primary", use_container_width=True)
+
+# ── Main canvas ───────────────────────────────────────────────────────────────
 st.title("krshi27-scribe")
 st.caption("text → Voronoi stencil")
 
-text = st.text_input("text", DEFAULT_PARAMS["text"], key="text")
-n_shift = st.slider("n_shift", 0, 60, DEFAULT_PARAMS["n_shift"], key="n_shift")
-shift_range = st.slider(
-    "shift_range", 0.0, 0.05, DEFAULT_PARAMS["shift_range"], step=0.001, format="%.3f", key="shift_range"
-)
-line_width = st.slider("line width", 0.1, 6.0, DEFAULT_PARAMS["line_width"], step=0.1, key="line_width")
-seed = st.number_input("seed", 0, 9999, DEFAULT_PARAMS["seed"], key="seed")
-
-# Background selection
-col_a, col_b = st.columns(2)
-with col_a:
-    bg_options = [BG_NONE] + list(BACKGROUNDS.keys())
-    background = st.selectbox("background", bg_options, key="background")
-with col_b:
-    default_color = "#ffffff" if background != BG_NONE else DEFAULT_PARAMS["line_color"]
-    line_color = st.color_picker("stroke color", default_color, key="line_color")
-
-opacity = st.slider("opacity", 0.0, 1.0, DEFAULT_PARAMS["opacity"], step=0.05, format="%.2f", key="opacity")
-
-# Size slider only relevant for plain stencil / download quality.
-if background == BG_NONE:
-    size = st.slider("size (px)", 128, 1024, DEFAULT_PARAMS["size"], step=64, key="size")
-else:
-    size = DEFAULT_PARAMS["size"]
-    st.caption("size: auto (native window resolution when background active)")
-
-if st.button("Render"):
-    if background != BG_NONE:
-        bg_img = load_background(background)
+if render_clicked:
+    if background == BG_WINDOW:
+        bg_img = load_background(BG_WINDOW)
         render_size = window_render_size(bg_img)
-    else:
-        bg_img = None
-        render_size = size
-
-    stencil = render(
-        text,
-        size=render_size,
-        line_color=line_color,
-        opacity=opacity,
-        n_shift=n_shift,
-        shift_range=shift_range,
-        line_width=line_width,
-        seed=seed,
-    )
-
-    if bg_img is not None:
+        stencil = render(
+            text,
+            size=render_size,
+            line_color=line_color,
+            opacity=opacity,
+            n_shift=n_shift,
+            shift_range=shift_range,
+            line_width=line_width,
+            seed=seed,
+        )
         result = composite_on_window(stencil, bg_img)
     else:
+        stencil = render(
+            text,
+            size=size,
+            line_color=line_color,
+            opacity=opacity,
+            n_shift=n_shift,
+            shift_range=shift_range,
+            line_width=line_width,
+            seed=seed,
+            bg=bg_color,
+        )
         result = stencil.convert("RGB")
 
     buf = io.BytesIO()
@@ -129,6 +166,7 @@ if st.button("Render"):
 if st.session_state.get("preview_png"):
     st.image(st.session_state["preview_png"], use_container_width=True)
 
+# ── Export ────────────────────────────────────────────────────────────────────
 with st.expander("Preset URL"):
     preset_query = _preset_url(
         {
@@ -139,16 +177,17 @@ with st.expander("Preset URL"):
             "line_width": line_width,
             "seed": seed,
             "line_color": line_color,
+            "bg_color": bg_color,
             "opacity": opacity,
             "background": background,
         }
     )
-    st.write("Load these exact parameters with query string:")
+    st.write("Load these exact parameters:")
     st.code(preset_query)
 
 st.download_button(
-    label="Download A4 300dpi JPEG (plain stencil)",
-    data=_high_res_jpeg_bytes(text, line_color, opacity, line_width, n_shift, shift_range, seed),
+    label="Download A4 300 dpi JPEG",
+    data=_high_res_jpeg_bytes(text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed),
     file_name="krshi27-scribe-a4.jpg",
     mime="image/jpeg",
 )

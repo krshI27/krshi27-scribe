@@ -40,7 +40,8 @@ def render(
     for path in paths:
         if len(path) < 2:
             continue
-        ax.plot(path[:, 0], path[:, 1], color=line_color, linewidth=line_width, solid_capstyle="round")
+        ax.plot(path[:, 0], path[:, 1], color=line_color, linewidth=line_width,
+                alpha=opacity, solid_capstyle="round")
 
     if bg is not None:
         fig.patch.set_facecolor(bg)
@@ -53,9 +54,4 @@ def render(
     fig.savefig(buf, format="png", dpi=dpi, transparent=transparent, bbox_inches=None, pad_inches=0)
     plt.close(fig)
     buf.seek(0)
-    img = Image.open(buf).convert("RGBA").resize((size, size), Image.LANCZOS)
-    if opacity < 1.0:
-        arr = np.array(img)
-        arr[:, :, 3] = (arr[:, :, 3] * opacity).astype(np.uint8)
-        img = Image.fromarray(arr)
-    return img
+    return Image.open(buf).convert("RGBA").resize((size, size), Image.LANCZOS)

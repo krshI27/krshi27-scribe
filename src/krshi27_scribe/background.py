@@ -82,10 +82,9 @@ def composite_on_window(
     scaled_side = win_w
     scaled = stencil_rgba.resize((scaled_side, scaled_side), Image.LANCZOS)
 
-    # Center vertically with a slight downward bias so text lands in lower half.
-    # win_h // 20 ≈ 5 % downward nudge keeps text fully within the glass.
+    # Place stencil center at 2/3 down the window (bottom third).
     paste_x = x0
-    paste_y = y0 + (win_h - scaled_side) // 2 + win_h // 20
+    paste_y = y0 + int(0.67 * win_h) - scaled_side // 2
 
     # Place stencil on a transparent full-size canvas.
     layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
