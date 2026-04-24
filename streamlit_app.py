@@ -1,6 +1,11 @@
 import io
 import json
+import os
+import sys
 import urllib.parse
+
+# Streamlit Cloud: add src/ to path so krshi27_scribe is importable without pip install
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
 
 import streamlit as st
 from PIL import Image
