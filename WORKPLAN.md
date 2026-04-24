@@ -1,6 +1,6 @@
 # WORKPLAN — krshi27-scribe
 
-**Status**: Streamlit app works locally. No `environment.yml` (missing — blocks Cloud deploy). GitHub mirror exists.
+**Status**: Streamlit app works locally. `environment.yml` created for Streamlit Cloud. GitHub mirror exists.
 **Output**: B&W Voronoi stencil from text — printable as fine art print, sticker, or stencil.
 **Params**: `text`, `size`, `n_shift`, `shift_range`, `line_width`, `seed` — all serializable → natural preset target.
 
