@@ -26,18 +26,20 @@
         - -e .
   ```
 
-## This sprint (Apr 24 – May 1)
+## Active priorities (2026-04-25 — Path A: just needs presets authored)
+
+### Path A: Zine Vol.1 preset rollout
+
+- [x] **ZV1-SCRIBE**: `?preset=` URL loader done. 6 params map directly to `st.session_state`. Round-trip verified.
+- [x] **SCRIBE-EXPORT**: A4@300dpi JPEG export done.
+- [ ] **ZV1-preset-scribe** ~30min: Author 2–3 Zine Vol.1 candidate presets — save as `presets/zine-vol1-*.json` (text + seed combos that produce strong stencils)
+
+### Revenue path (deferred)
 
 - [x] **SCRIBE-1**: Deployed to Streamlit Cloud (2026-04-25)
-- [x] **ZV1-SCRIBE** ~1hr: Add `?preset=` URL loader (see pattern below) — 6 params map directly to `st.session_state`; test round-trip with a saved preset URL
-- [x] **SCRIBE-BG** ~2hr: Subway window background — `background.py` masks window glass via rounded-rect (calibrated px bounds 300–1905 × 205–1305 on 2200×1500), composites RGBA stencil with feathered edges; `line_color` color picker added to app; default white stroke when background active; 8 tests pass
-
-## Next sprint
-
-- [x] **SCRIBE-EXPORT** ~1hr: Add high-res download button — `render(text, size=3508)` at A4@300dpi (2480×3508px); `PIL.Image.save(buf, "JPEG", dpi=(300,300))`; `st.download_button`
-- [ ] **SCRIBE-PRODIGI** ~1hr: Add "Order Print" button → call high-res render → upload PNG to R2 public bucket → `POST https://api.prodigi.com/v4.0/orders` with `GLOBAL-FAP-11.7X8.3` SKU (A4 fine art print)
-- [ ] **SCRIBE-STICKER** ~30min: Evaluate sticker SKU (`GLOBAL-STK-*`) — B&W Voronoi type is ideal for sticker; check Prodigi sticker specs (white background needed?)
-- [ ] **ZV1-preset-scribe** ~30min: Create 2–3 Zine Vol.1 candidate presets — save as `presets/zine-vol1-*.json`
+- [x] **SCRIBE-BG**: Subway window background composite done; 8 tests pass.
+- [ ] **SCRIBE-PRODIGI** ~1hr: "Order Print" button → high-res render → upload PNG to R2 public bucket → `POST https://api.prodigi.com/v4.0/orders` with `GLOBAL-FAP-11.7X8.3` (A4 fine art print)
+- [ ] **SCRIBE-STICKER** ~30min: Evaluate sticker SKU (`GLOBAL-STK-*`) — B&W Voronoi type is ideal for sticker; check Prodigi sticker specs
 
 ## Preset loader pattern (Streamlit)
 
