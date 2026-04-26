@@ -53,11 +53,11 @@ def _preset_url(params: dict[str, object]) -> str:
     return f"?preset={urllib.parse.quote(json.dumps(payload, separators=(',', ':')))}"
 
 
-@st.cache_data
+@st.cache_data(max_entries=2)
 def _high_res_jpeg_bytes(text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed):
-    source = render(
+    square = render(
         text,
-        size=3508,
+        size=2480,
         line_color=line_color,
         opacity=opacity,
         line_width=line_width,
@@ -68,7 +68,6 @@ def _high_res_jpeg_bytes(text, line_color, bg_color, opacity, line_width, n_shif
     )
     a4_width, a4_height = 2480, 3508
     canvas = Image.new("RGB", (a4_width, a4_height), bg_color)
-    square = source.resize((2480, 2480), Image.LANCZOS)
     canvas.paste(square, (0, (a4_height - 2480) // 2), square.convert("RGBA"))
     buf = io.BytesIO()
     canvas.save(buf, format="JPEG", dpi=(300, 300), quality=95)
@@ -190,9 +189,16 @@ with st.expander("Preset URL"):
     st.write("Load these exact parameters:")
     st.code(preset_query)
 
-st.download_button(
-    label="Download A4 300 dpi JPEG",
-    data=_high_res_jpeg_bytes(text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed),
-    file_name="krshi27-scribe-a4.jpg",
-    mime="image/jpeg",
-)
+if st.button("Prepare A4 300 dpi JPEG"):
+    with st.spinner("Rendering A4 300 dpi…"):
+        st.session_state["a4_jpeg"] = _high_res_jpeg_bytes(
+            text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed
+        )
+
+if st.session_state.get("a4_jpeg"):
+    st.download_button(
+        label="Download A4 300 dpi JPEG",
+        data=st.session_state["a4_jpeg"],
+        file_name="krshi27-scribe-a4.jpg",
+        mime="image/jpeg",
+    )
