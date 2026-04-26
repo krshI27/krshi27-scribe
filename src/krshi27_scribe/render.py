@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import gc
 import io
 from pathlib import Path
 
@@ -53,5 +54,6 @@ def render(
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=dpi, transparent=transparent, bbox_inches=None, pad_inches=0)
     plt.close(fig)
+    gc.collect()
     buf.seek(0)
     return Image.open(buf).convert("RGBA").resize((size, size), Image.LANCZOS)

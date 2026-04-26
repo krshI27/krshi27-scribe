@@ -53,11 +53,16 @@ def _preset_url(params: dict[str, object]) -> str:
     return f"?preset={urllib.parse.quote(json.dumps(payload, separators=(',', ':')))}"
 
 
+A4_INCHES = (8.27, 11.69)
+
+
 @st.cache_data(max_entries=2)
-def _high_res_jpeg_bytes(text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed):
+def _high_res_jpeg_bytes(text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed, dpi):
+    a4_width = round(A4_INCHES[0] * dpi)
+    a4_height = round(A4_INCHES[1] * dpi)
     square = render(
         text,
-        size=2480,
+        size=a4_width,
         line_color=line_color,
         opacity=opacity,
         line_width=line_width,
@@ -66,11 +71,10 @@ def _high_res_jpeg_bytes(text, line_color, bg_color, opacity, line_width, n_shif
         seed=seed,
         bg=bg_color,
     )
-    a4_width, a4_height = 2480, 3508
     canvas = Image.new("RGB", (a4_width, a4_height), bg_color)
-    canvas.paste(square, (0, (a4_height - 2480) // 2), square.convert("RGBA"))
+    canvas.paste(square, (0, (a4_height - a4_width) // 2), square.convert("RGBA"))
     buf = io.BytesIO()
-    canvas.save(buf, format="JPEG", dpi=(300, 300), quality=95)
+    canvas.save(buf, format="JPEG", dpi=(dpi, dpi), quality=95)
     return buf.getvalue()
 
 
@@ -102,7 +106,7 @@ with st.sidebar:
 
     st.subheader("Shape")
     n_shift = st.slider(
-        "Layers", 0, 256, DEFAULT_PARAMS["n_shift"], key="n_shift",
+        "Layers", 0, 64, DEFAULT_PARAMS["n_shift"], key="n_shift",
         help="Number of Voronoi-shifted copies per character",
     )
     shift_range = st.slider(
@@ -122,7 +126,7 @@ with st.sidebar:
     st.subheader("Output")
     seed = st.number_input("Seed", 0, 9999, DEFAULT_PARAMS["seed"], key="seed")
     if background == BG_SOLID:
-        size = st.slider("Resolution", 128, 1024, DEFAULT_PARAMS["size"], step=64, key="size")
+        size = st.slider("Resolution", 128, 768, DEFAULT_PARAMS["size"], step=64, key="size")
     else:
         size = DEFAULT_PARAMS["size"]
         st.caption("Resolution: auto (native window width)")
@@ -189,15 +193,17 @@ with st.expander("Preset URL"):
     st.write("Load these exact parameters:")
     st.code(preset_query)
 
-if st.button("Prepare A4 300 dpi JPEG"):
-    with st.spinner("Rendering A4 300 dpi…"):
+a4_dpi = st.radio("A4 print DPI", [150, 300], horizontal=True, key="a4_dpi")
+if st.button(f"Prepare A4 {a4_dpi} dpi JPEG"):
+    with st.spinner(f"Rendering A4 {a4_dpi} dpi…"):
         st.session_state["a4_jpeg"] = _high_res_jpeg_bytes(
-            text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed
+            text, line_color, bg_color, opacity, line_width, n_shift, shift_range, seed, a4_dpi
         )
+        st.session_state["a4_jpeg_dpi"] = a4_dpi
 
 if st.session_state.get("a4_jpeg"):
     st.download_button(
-        label="Download A4 300 dpi JPEG",
+        label=f"Download A4 {st.session_state.get('a4_jpeg_dpi', 300)} dpi JPEG",
         data=st.session_state["a4_jpeg"],
         file_name="krshi27-scribe-a4.jpg",
         mime="image/jpeg",
