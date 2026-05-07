@@ -10,7 +10,8 @@ sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src
 import streamlit as st
 from PIL import Image
 
-from krshi27_scribe import render, BACKGROUNDS, load_background, window_render_size, composite_on_window
+from krshi27_scribe.render import render
+from krshi27_scribe import BACKGROUNDS, load_background, window_render_size, composite_on_window
 
 st.set_page_config(page_title="krshi27-scribe", layout="wide")
 
