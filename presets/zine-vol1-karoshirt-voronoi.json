@@ -1,0 +1,16 @@
+{
+    "name": "Zine Vol.1 — KRSHI27 Voronoi",
+    "app": "krshi27-scribe",
+    "params": {
+        "text": "karoshirt",
+        "size": 512,
+        "n_shift": 64,
+        "shift_range": 0.01,
+        "line_width": 0.3,
+        "seed": 7,
+        "line_color": "#ffffff",
+        "bg_color": "#484848",
+        "opacity": 0.8,
+        "background": "Solid Color"
+    }
+}
