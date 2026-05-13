@@ -1,0 +1,16 @@
+{
+    "name": "Zine Vol.1 — Scribe Light",
+    "app": "krshi27-scribe",
+    "params": {
+        "text": "digon",
+        "size": 512,
+        "n_shift": 32,
+        "shift_range": 0.015,
+        "line_width": 0.5,
+        "seed": 42,
+        "line_color": "#30360F",
+        "bg_color": "#E7DED2",
+        "opacity": 0.9,
+        "background": "Solid Color"
+    }
+}

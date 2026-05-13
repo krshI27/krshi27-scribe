@@ -1,0 +1,16 @@
+{
+    "name": "Zine Vol.1 — Scribe Subway",
+    "app": "krshi27-scribe",
+    "params": {
+        "text": "karoshirt",
+        "size": 512,
+        "n_shift": 80,
+        "shift_range": 0.02,
+        "line_width": 0.2,
+        "seed": 13,
+        "line_color": "#CB411B",
+        "bg_color": "#30360F",
+        "opacity": 0.75,
+        "background": "Subway Window"
+    }
+}
